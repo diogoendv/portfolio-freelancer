@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="/favicon.png" type="image/png" />
+  <title>Admin — Painel</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body class="bg-[#0f172a] text-slate-200 font-sans min-h-screen">
+  <header class="border-b border-slate-800 px-6 py-4 flex justify-between items-center">
+    <h1 class="text-lg font-bold text-white">Painel Admin</h1>
+    <a href="{{ url_for('admin_logout') }}" class="text-slate-400 hover:text-cyan-400 text-sm">Sair</a>
+  </header>
+
+  <div class="flex flex-col md:flex-row gap-6 p-6">
+    <nav class="flex md:flex-col gap-2 shrink-0">
+      <button type="button" data-tab="engajamento" class="admin-tab px-4 py-2 rounded-lg text-left bg-cyan-500/20 text-cyan-400 border border-cyan-500/50">Engajamento</button>
+      <button type="button" data-tab="relatorios" class="admin-tab px-4 py-2 rounded-lg text-left text-slate-400 hover:bg-slate-800/50">Relatórios (Leads)</button>
+      <button type="button" data-tab="chat" class="admin-tab px-4 py-2 rounded-lg text-left text-slate-400 hover:bg-slate-800/50">Chat</button>
+      <button type="button" data-tab="arquivadas" class="admin-tab px-4 py-2 rounded-lg text-left text-slate-400 hover:bg-slate-800/50">Conversas finalizadas</button>
+    </nav>
+
+    <main class="flex-1 min-w-0">
+      <section id="panel-engajamento" class="admin-panel">
+        <h2 class="text-xl font-bold text-white mb-4">Engajamento</h2>
+        <p class="text-slate-400 mb-4">Quantas pessoas visualizam e clicam no site.</p>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+          <div class="bg-slate-800/60 rounded-xl p-4 border border-slate-700">
+            <p class="text-slate-400 text-sm">Visualizações de página</p>
+            <p id="stat-page-views" class="text-2xl font-bold text-cyan-400">0</p>
+          </div>
+          <div class="bg-slate-800/60 rounded-xl p-4 border border-slate-700">
+            <p class="text-slate-400 text-sm">Cliques</p>
+            <p id="stat-clicks" class="text-2xl font-bold text-cyan-400">0</p>
+          </div>
+          <div class="bg-slate-800/60 rounded-xl p-4 border border-slate-700">
+            <p class="text-slate-400 text-sm">Leads (formulário)</p>
+            <p id="stat-leads" class="text-2xl font-bold text-cyan-400">0</p>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <div class="bg-slate-800/60 rounded-xl p-4 border border-slate-700">
+            <p class="text-slate-400 text-sm mb-3">Visualizações e cliques — últimos 7 dias</p>
+            <canvas id="chart-engagement" height="200"></canvas>
+          </div>
+          <div class="bg-slate-800/60 rounded-xl p-4 border border-slate-700">
+            <p class="text-slate-400 text-sm mb-3">Leads por período (últimos 7 dias)</p>
+            <canvas id="chart-leads" height="200"></canvas>
+          </div>
+        </div>
+        <div class="bg-slate-800/60 rounded-xl p-4 border border-slate-700">
+          <p class="text-slate-400 text-sm mb-3">Localização dos visitantes (IP)</p>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm border border-slate-700 rounded-lg overflow-hidden">
+              <thead class="bg-slate-800/80">
+                <tr>
+                  <th class="text-left p-3 text-slate-400 font-medium">IP</th>
+                  <th class="text-left p-3 text-slate-400 font-medium">Localização</th>
+                  <th class="text-left p-3 text-slate-400 font-medium">Última visita</th>
+                </tr>
+              </thead>
+              <tbody id="visitors-tbody" class="divide-y divide-slate-700"></tbody>
+            </table>
+          </div>
+          <p id="visitors-empty" class="text-slate-500 text-sm py-3 hidden">Nenhum visitante com IP registrado ainda.</p>
+        </div>
+      </section>
+
+      <section id="panel-relatorios" class="admin-panel hidden">
+        <h2 class="text-xl font-bold text-white mb-4">Relatórios — Leads</h2>
+        <p class="text-slate-400 mb-4">Dados enviados pelo formulário de contato.</p>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm border border-slate-700 rounded-lg overflow-hidden">
+            <thead class="bg-slate-800/80">
+              <tr>
+                <th class="text-left p-3 text-slate-400 font-medium">Data</th>
+                <th class="text-left p-3 text-slate-400 font-medium">Nome</th>
+                <th class="text-left p-3 text-slate-400 font-medium">E-mail</th>
+                <th class="text-left p-3 text-slate-400 font-medium">Serviço</th>
+                <th class="text-left p-3 text-slate-400 font-medium">Mensagem</th>
+              </tr>
+            </thead>
+            <tbody id="leads-tbody" class="divide-y divide-slate-700"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="panel-chat" class="admin-panel hidden">
+        <h2 class="text-xl font-bold text-white mb-4">Chat em tempo real</h2>
+        <div class="flex flex-col md:flex-row gap-4 h-[400px]">
+          <div class="w-full md:w-64 shrink-0 bg-slate-800/60 rounded-xl border border-slate-700 overflow-hidden flex flex-col">
+            <p class="p-3 text-slate-400 text-sm border-b border-slate-700">Conversas</p>
+            <ul id="chat-list" class="flex-1 overflow-y-auto p-2"></ul>
+          </div>
+          <div class="flex-1 flex flex-col bg-slate-800/60 rounded-xl border border-slate-700 overflow-hidden">
+            <div class="p-3 border-b border-slate-700 flex flex-col gap-2">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <p class="text-slate-400 text-sm">Código interno da conversa</p>
+                  <p id="chat-session-label" class="text-cyan-400 font-mono text-sm break-all">—</p>
+                </div>
+                <button type="button" id="chat-finalize-btn" class="hidden px-3 py-1.5 rounded-lg text-sm font-medium bg-amber-500/20 text-amber-400 border border-amber-500/50 hover:bg-amber-500/30 transition" title="Enviar para Conversas finalizadas (relatórios)">Finalizar conversa</button>
+              </div>
+            </div>
+            <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-2"></div>
+            <div id="chat-form-wrap" class="p-3 border-t border-slate-700 hidden">
+              <form id="chat-form" class="flex gap-2">
+                <input type="hidden" id="chat-session-id" value="" />
+                <input type="text" id="chat-input" placeholder="Digite sua mensagem..." class="flex-1 px-4 py-2 rounded-lg bg-slate-900 border border-slate-600 text-white placeholder-slate-500 focus:border-cyan-400 outline-none" />
+                <button type="submit" class="px-4 py-2 rounded-lg bg-cyan-500/20 text-cyan-400 border border-cyan-500/50">Enviar</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="panel-arquivadas" class="admin-panel hidden">
+        <h2 class="text-xl font-bold text-white mb-4">Conversas finalizadas (relatórios)</h2>
+        <p class="text-slate-400 mb-4">Conversas encerradas após 1 hora sem atividade, armazenadas para aferição futura.</p>
+        <div class="overflow-x-auto mb-4">
+          <table class="w-full text-sm border border-slate-700 rounded-lg overflow-hidden">
+            <thead class="bg-slate-800/80">
+              <tr>
+                <th class="text-left p-3 text-slate-400 font-medium">Código interno</th>
+                <th class="text-left p-3 text-slate-400 font-medium">Encerrada em</th>
+                <th class="text-left p-3 text-slate-400 font-medium">Mensagens</th>
+                <th class="text-left p-3 text-slate-400 font-medium">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="archived-tbody" class="divide-y divide-slate-700"></tbody>
+          </table>
+        </div>
+        <div id="archived-detail" class="hidden bg-slate-800/60 rounded-xl border border-slate-700 p-4">
+          <p class="text-slate-400 text-sm mb-2"><span id="archived-detail-code" class="text-cyan-400 font-mono"></span></p>
+          <div id="archived-detail-messages" class="space-y-2 max-h-64 overflow-y-auto"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    (function() {
+      var tabs = document.querySelectorAll('.admin-tab');
+      var panels = document.querySelectorAll('.admin-panel');
+      tabs.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var t = btn.getAttribute('data-tab');
+          tabs.forEach(function(b) {
+            b.classList.remove('bg-cyan-500/20', 'text-cyan-400', 'border-cyan-500/50');
+            b.classList.add('text-slate-400');
+          });
+          btn.classList.add('bg-cyan-500/20', 'text-cyan-400', 'border-cyan-500/50');
+          panels.forEach(function(p) {
+            p.classList.add('hidden');
+            if (p.id === 'panel-' + t) p.classList.remove('hidden');
+          });
+          if (t === 'engajamento') loadStats();
+          if (t === 'relatorios') loadLeads();
+          if (t === 'chat') loadConversations();
+          if (t === 'arquivadas') loadArchived();
+        });
+      });
+
+      var chartEngagement = null;
+      var chartLeads = null;
+
+      function loadStats() {
+        fetch('/api/admin/stats')
+          .then(function(r) { return r.json(); })
+          .then(function(d) {
+            document.getElementById('stat-page-views').textContent = d.page_views || 0;
+            document.getElementById('stat-clicks').textContent = d.clicks || 0;
+            document.getElementById('stat-leads').textContent = d.leads_count || 0;
+
+            var chart = d.chart || [];
+            var labels = chart.map(function(x) {
+              var dt = x.date;
+              return dt ? dt.slice(8, 10) + '/' + dt.slice(5, 7) : '';
+            });
+
+            if (window.Chart && chart.length) {
+              if (chartEngagement) chartEngagement.destroy();
+              var ctx1 = document.getElementById('chart-engagement');
+              if (ctx1) {
+                chartEngagement = new Chart(ctx1, {
+                  type: 'bar',
+                  data: {
+                    labels: labels,
+                    datasets: [
+                      { label: 'Visualizações', data: chart.map(function(x) { return x.page_views || 0; }), backgroundColor: 'rgba(34, 211, 238, 0.5)', borderColor: 'rgb(34, 211, 238)', borderWidth: 1 },
+                      { label: 'Cliques', data: chart.map(function(x) { return x.clicks || 0; }), backgroundColor: 'rgba(167, 139, 250, 0.5)', borderColor: 'rgb(167, 139, 250)', borderWidth: 1 }
+                    ]
+                  },
+                  options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: { legend: { labels: { color: '#94a3b8' } } },
+                    scales: {
+                      x: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(148, 163, 184, 0.2)' } },
+                      y: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(148, 163, 184, 0.2)' } }
+                    }
+                  }
+                });
+              }
+              if (chartLeads) chartLeads.destroy();
+              var ctx2 = document.getElementById('chart-leads');
+              if (ctx2) {
+                chartLeads = new Chart(ctx2, {
+                  type: 'line',
+                  data: {
+                    labels: labels,
+                    datasets: [{ label: 'Leads', data: chart.map(function(x) { return x.leads || 0; }), borderColor: 'rgb(34, 211, 238)', backgroundColor: 'rgba(34, 211, 238, 0.1)', fill: true, tension: 0.3 }]
+                  },
+                  options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: { legend: { labels: { color: '#94a3b8' } } },
+                    scales: {
+                      x: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(148, 163, 184, 0.2)' } },
+                      y: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(148, 163, 184, 0.2)' }, min: 0 }
+                    }
+                  }
+                });
+              }
+            }
+
+            var visitors = d.visitors || [];
+            var tbody = document.getElementById('visitors-tbody');
+            var empty = document.getElementById('visitors-empty');
+            if (tbody) {
+              if (visitors.length === 0) {
+                tbody.innerHTML = '';
+                if (empty) empty.classList.remove('hidden');
+              } else {
+                if (empty) empty.classList.add('hidden');
+                tbody.innerHTML = visitors.map(function(v) {
+                  return '<tr class="hover:bg-slate-800/40"><td class="p-3 font-mono text-cyan-400">' + (v.ip || '—').replace(/</g, '&lt;') + '</td><td class="p-3 text-slate-300">' + (v.location || '—').replace(/</g, '&lt;') + '</td><td class="p-3 text-slate-400 text-sm">' + (v.last_seen || '—').replace(/</g, '&lt;') + '</td></tr>';
+                }).join('');
+              }
+            }
+          });
+      }
+
+      function loadLeads() {
+        fetch('/api/admin/leads')
+          .then(function(r) { return r.json(); })
+          .then(function(list) {
+            var tbody = document.getElementById('leads-tbody');
+            tbody.innerHTML = list.length === 0 ? '<tr><td colspan="5" class="p-4 text-slate-500">Nenhum lead ainda.</td></tr>' : list.map(function(L) {
+              var d = (L.created_at || '').slice(0, 16);
+              return '<tr class="hover:bg-slate-800/40"><td class="p-3">' + d + '</td><td class="p-3">' + (L.name || '') + '</td><td class="p-3">' + (L.email || '') + '</td><td class="p-3">' + (L.service || '') + '</td><td class="p-3 max-w-xs truncate">' + (L.message || '') + '</td></tr>';
+            }).join('');
+          });
+      }
+
+      var socket = io();
+      var currentSessionId = null;
+
+      socket.on('connect', function() {
+        socket.emit('admin_join', {});
+      });
+
+      socket.on('new_message', function(data) {
+        if (data.sender !== 'visitor') return;
+        var sessionId = data.session_id;
+        loadConversations();
+        if (currentSessionId === sessionId) {
+          var wrap = document.getElementById('chat-messages');
+          wrap.insertAdjacentHTML('beforeend', '<div class="text-right"><span class="inline-block px-3 py-1 rounded-lg bg-slate-700 text-slate-200 text-sm">' + (data.message || '').replace(/</g, '&lt;') + '</span></div>');
+          wrap.scrollTop = wrap.scrollHeight;
+        } else if (!currentSessionId && sessionId) {
+          currentSessionId = sessionId;
+          document.getElementById('chat-session-id').value = sessionId;
+          document.getElementById('chat-session-label').textContent = data.internal_code || sessionId;
+          document.getElementById('chat-form-wrap').classList.remove('hidden');
+          document.getElementById('chat-finalize-btn').classList.remove('hidden');
+          socket.emit('admin_join_session', { session_id: sessionId });
+          var wrap = document.getElementById('chat-messages');
+          var msgHtml = '<div class="text-right"><span class="inline-block px-3 py-1 rounded-lg bg-slate-700 text-slate-200 text-sm">' + (data.message || '').replace(/</g, '&lt;') + '</span></div>';
+          fetch('/api/admin/messages/' + sessionId)
+            .then(function(r) { return r.json(); })
+            .then(function(msgs) {
+              wrap.innerHTML = msgs.map(function(m) {
+                var side = m.sender === 'admin' ? 'text-left' : 'text-right';
+                var bg = m.sender === 'admin' ? 'bg-cyan-500/20' : 'bg-slate-700';
+                return '<div class="' + side + '"><span class="inline-block px-3 py-1 rounded-lg ' + bg + ' text-slate-200 text-sm">' + (m.message || '').replace(/</g, '&lt;') + '</span></div>';
+              }).join('');
+              var lastMsg = msgs[msgs.length - 1];
+              if (!lastMsg || lastMsg.message !== data.message) wrap.insertAdjacentHTML('beforeend', msgHtml);
+              wrap.scrollTop = wrap.scrollHeight;
+            })
+            .catch(function() {
+              wrap.innerHTML = msgHtml;
+              wrap.scrollTop = wrap.scrollHeight;
+            });
+        }
+      });
+
+      function loadConversations() {
+        fetch('/api/admin/conversations')
+          .then(function(r) { return r.json(); })
+          .then(function(list) {
+            var ul = document.getElementById('chat-list');
+            ul.innerHTML = list.length === 0 ? '<li class="text-slate-500 text-sm p-2">Nenhuma conversa ainda.</li>' : list.map(function(c) {
+              var sid = (c.session_id || '').replace(/"/g, '&quot;');
+              var code = (c.internal_code || sid).replace(/"/g, '&quot;');
+              return '<li><button type="button" class="w-full text-left px-3 py-2 rounded hover:bg-slate-700/50 text-sm font-mono" data-session="' + sid + '" data-internal-code="' + code + '" title="' + (c.internal_code || sid) + '">' + (c.internal_code || sid.slice(0, 12)) + ' (' + (c.message_count || 0) + ' msgs)</button></li>';
+            }).join('');
+            ul.querySelectorAll('button').forEach(function(btn) {
+              btn.addEventListener('click', function() {
+                currentSessionId = btn.getAttribute('data-session');
+                var label = btn.getAttribute('data-internal-code') || currentSessionId;
+                document.getElementById('chat-session-id').value = currentSessionId;
+                document.getElementById('chat-session-label').textContent = label;
+                document.getElementById('chat-form-wrap').classList.remove('hidden');
+                document.getElementById('chat-finalize-btn').classList.remove('hidden');
+                socket.emit('admin_join_session', { session_id: currentSessionId });
+                fetch('/api/admin/messages/' + currentSessionId)
+                  .then(function(r) { return r.json(); })
+                  .then(function(msgs) {
+                    var wrap = document.getElementById('chat-messages');
+                    wrap.innerHTML = msgs.map(function(m) {
+                      var side = m.sender === 'admin' ? 'text-left' : 'text-right';
+                      var bg = m.sender === 'admin' ? 'bg-cyan-500/20' : 'bg-slate-700';
+                      return '<div class="' + side + '"><span class="inline-block px-3 py-1 rounded-lg ' + bg + ' text-slate-200 text-sm">' + (m.message || '').replace(/</g, '&lt;') + '</span></div>';
+                    }).join('');
+                    wrap.scrollTop = wrap.scrollHeight;
+                  });
+              });
+            });
+          });
+      }
+
+      document.getElementById('chat-finalize-btn').addEventListener('click', function() {
+        var sid = currentSessionId || document.getElementById('chat-session-id').value;
+        if (!sid) return;
+        if (!confirm('Finalizar esta conversa? Ela será enviada para "Conversas finalizadas" (relatórios) e sairá da lista de ativas.')) return;
+        var btn = document.getElementById('chat-finalize-btn');
+        btn.disabled = true;
+        fetch('/api/admin/chat-archive/' + encodeURIComponent(sid), { method: 'POST' })
+          .then(function(r) { return r.json(); })
+          .then(function(data) {
+            if (data.success) {
+              currentSessionId = null;
+              document.getElementById('chat-session-id').value = '';
+              document.getElementById('chat-session-label').textContent = '—';
+              document.getElementById('chat-form-wrap').classList.add('hidden');
+              document.getElementById('chat-finalize-btn').classList.add('hidden');
+              document.getElementById('chat-messages').innerHTML = '';
+              loadConversations();
+              alert(data.message || 'Conversa finalizada.');
+            } else {
+              alert(data.error || 'Erro ao finalizar.');
+            }
+          })
+          .catch(function() { alert('Erro de conexão.'); })
+          .finally(function() { btn.disabled = false; });
+      });
+
+      document.getElementById('chat-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        var sid = document.getElementById('chat-session-id').value;
+        var input = document.getElementById('chat-input');
+        var text = input.value.trim();
+        if (!sid || !text) return;
+        socket.emit('admin_message', { session_id: sid, message: text });
+        var wrap = document.getElementById('chat-messages');
+        wrap.insertAdjacentHTML('beforeend', '<div class="text-left"><span class="inline-block px-3 py-1 rounded-lg bg-cyan-500/20 text-slate-200 text-sm">' + text.replace(/</g, '&lt;') + '</span></div>');
+        wrap.scrollTop = wrap.scrollHeight;
+        input.value = '';
+      });
+
+      function loadArchived() {
+        fetch('/api/admin/chat-archived')
+          .then(function(r) { return r.json(); })
+          .then(function(list) {
+            var tbody = document.getElementById('archived-tbody');
+            tbody.innerHTML = list.length === 0 ? '<tr><td colspan="4" class="p-4 text-slate-500">Nenhuma conversa finalizada ainda.</td></tr>' : list.map(function(a, idx) {
+              var closed = (a.closed_at || '').slice(0, 16);
+              return '<tr class="hover:bg-slate-800/40"><td class="p-3 font-mono text-cyan-400">' + (a.internal_code || '—') + '</td><td class="p-3">' + closed + '</td><td class="p-3">' + (a.message_count || 0) + '</td><td class="p-3"><button type="button" class="text-cyan-400 hover:underline text-sm" data-archived-index="' + idx + '">Ver mensagens</button></td></tr>';
+            }).join('');
+            window._archivedList = list;
+            tbody.querySelectorAll('button[data-archived-index]').forEach(function(btn) {
+              btn.addEventListener('click', function() {
+                var i = parseInt(btn.getAttribute('data-archived-index'), 10);
+                var a = (window._archivedList || [])[i];
+                if (!a) return;
+                document.getElementById('archived-detail-code').textContent = a.internal_code || a.session_id || '—';
+                var msgs = (a.messages || []).map(function(m) {
+                  var side = m.sender === 'admin' ? 'text-left' : 'text-right';
+                  var bg = m.sender === 'admin' ? 'bg-cyan-500/20' : 'bg-slate-700';
+                  return '<div class="' + side + '"><span class="inline-block px-3 py-1 rounded-lg ' + bg + ' text-slate-200 text-sm">' + (m.message || '').replace(/</g, '&lt;') + '</span></div>';
+                }).join('');
+                document.getElementById('archived-detail-messages').innerHTML = msgs || '<p class="text-slate-500 text-sm">Nenhuma mensagem.</p>';
+                document.getElementById('archived-detail').classList.remove('hidden');
+              });
+            });
+          });
+      }
+
+      loadStats();
+    })();
+  </script>
+</body>
+</html>

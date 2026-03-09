@@ -1,0 +1,174 @@
+{% extends "base_exemplo.html" %}
+{% block title %}Cardápio Digital — Exemplo{% endblock %}
+{% block content %}
+<div class="min-h-screen pt-14">
+  <header class="border-b border-slate-700/50 py-6">
+    <div class="max-w-2xl mx-auto px-6 text-center">
+      <h1 class="text-2xl font-bold text-white">Cardápio Digital</h1>
+      <p class="text-slate-400 text-sm mt-1">Restaurante Exemplo · Delivery e salão</p>
+      <div class="mt-4 flex justify-center gap-2">
+        <button type="button" id="view-client" class="px-4 py-2 rounded-lg bg-cyan-500/20 text-cyan-400 border border-cyan-500/50 text-sm font-medium">Ver como cliente</button>
+        <button type="button" id="view-owner" class="px-4 py-2 rounded-lg bg-slate-700 text-slate-400 border border-slate-600 text-sm">Sou dono (editar cardápio)</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-2xl mx-auto px-6 py-8">
+    <!-- Modo Cliente: ver cardápio e montar pedido -->
+    <div id="client-view">
+      <div id="client-menu" class="space-y-8"></div>
+      <div id="client-order" class="mt-10 card-glass rounded-2xl p-6 hidden">
+        <h2 class="text-lg font-bold text-white mb-4">Seu pedido</h2>
+        <div id="order-items"></div>
+        <p class="mt-4 flex justify-between text-white font-semibold">Total: <span id="order-total">R$ 0,00</span></p>
+        <button type="button" id="btn-place-order" class="mt-4 w-full py-3 rounded-xl bg-cyan-500/20 text-cyan-400 border border-cyan-500/50 font-medium hover:bg-cyan-500/30">Fazer pedido (demonstração)</button>
+      </div>
+    </div>
+
+    <!-- Modo Dono: listar, adicionar e remover itens -->
+    <div id="owner-view" class="hidden">
+      <div class="mb-6">
+        <label class="block text-slate-400 text-sm mb-2">Categoria</label>
+        <input type="text" id="new-cat" placeholder="Ex: Bebidas" class="w-full px-4 py-2 rounded-lg bg-slate-800 border border-slate-600 text-white placeholder-slate-500" />
+      </div>
+      <div class="mb-6">
+        <label class="block text-slate-400 text-sm mb-2">Nome do item</label>
+        <input type="text" id="new-name" placeholder="Ex: Suco de laranja" class="w-full px-4 py-2 rounded-lg bg-slate-800 border border-slate-600 text-white placeholder-slate-500" />
+      </div>
+      <div class="mb-6">
+        <label class="block text-slate-400 text-sm mb-2">Preço (R$)</label>
+        <input type="number" id="new-price" step="0.01" min="0" placeholder="12,00" class="w-full px-4 py-2 rounded-lg bg-slate-800 border border-slate-600 text-white placeholder-slate-500" />
+      </div>
+      <button type="button" id="btn-add-item" class="mb-10 px-4 py-2 rounded-lg bg-cyan-500/20 text-cyan-400 border border-cyan-500/50 hover:bg-cyan-500/30">Adicionar item</button>
+      <div id="owner-list" class="space-y-4"></div>
+    </div>
+  </main>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+(function() {
+  var MENU_KEY = 'exemplo_cardapio_menu';
+  var defaultMenu = {
+    'Entradas': [ { name: 'Bruschetta', price: 18 }, { name: 'Carpaccio', price: 24 }, { name: 'Salada da casa', price: 22 } ],
+    'Pratos principais': [ { name: 'Filé ao molho', price: 48 }, { name: 'Risoto de cogumelos', price: 42 }, { name: 'Pasta carbonara', price: 38 } ],
+    'Bebidas': [ { name: 'Refrigerante', price: 6 }, { name: 'Suco natural', price: 12 }, { name: 'Água com gás', price: 5 } ]
+  };
+  function getMenu() {
+    try {
+      var s = localStorage.getItem(MENU_KEY);
+      return s ? JSON.parse(s) : defaultMenu;
+    } catch(e) { return defaultMenu; }
+  }
+  function setMenu(menu) { localStorage.setItem(MENU_KEY, JSON.stringify(menu)); renderAll(); }
+  function addMenuItem(cat, name, price) {
+    var menu = getMenu();
+    if (!menu[cat]) menu[cat] = [];
+    menu[cat].push({ name: name, price: price });
+    setMenu(menu);
+  }
+  function removeMenuItem(cat, index) {
+    var menu = getMenu();
+    if (menu[cat]) { menu[cat].splice(index, 1); if (!menu[cat].length) delete menu[cat]; }
+    setMenu(menu);
+  }
+
+  var order = [];
+  function addToOrder(cat, name, price) {
+    order.push({ cat: cat, name: name, price: price });
+    renderClientOrder();
+    document.getElementById('client-order').classList.remove('hidden');
+  }
+  function removeFromOrder(i) {
+    order.splice(i, 1);
+    renderClientOrder();
+    if (!order.length) document.getElementById('client-order').classList.add('hidden');
+  }
+  function renderClientOrder() {
+    var el = document.getElementById('order-items');
+    var total = 0;
+    var html = '';
+    order.forEach(function(x, i) {
+      total += x.price;
+      html += '<div class="flex justify-between items-center py-2 border-b border-slate-700/50"><span class="text-slate-300">' + x.name + ' — R$ ' + x.price.toFixed(2).replace('.', ',') + '</span><button type="button" class="remove-order text-red-400 text-sm" data-i="' + i + '">Remover</button></div>';
+    });
+    el.innerHTML = html || '<p class="text-slate-500">Nenhum item.</p>';
+    document.getElementById('order-total').textContent = 'R$ ' + total.toFixed(2).replace('.', ',');
+    el.querySelectorAll('.remove-order').forEach(function(b) { b.onclick = function() { removeFromOrder(parseInt(b.getAttribute('data-i'))); }; });
+  }
+
+  function renderClientMenu() {
+    var menu = getMenu();
+    var html = '';
+    for (var cat in menu) {
+      html += '<section><h2 class="text-sm font-semibold text-cyan-400 uppercase tracking-wider mb-4">' + cat + '</h2><ul class="space-y-3">';
+      menu[cat].forEach(function(item) {
+        html += '<li class="flex justify-between items-baseline py-2 border-b border-slate-700/50">';
+        html += '<span class="text-white">' + item.name + '</span>';
+        html += '<div class="flex items-center gap-2"><span class="text-slate-400 text-sm">R$ ' + item.price.toFixed(2).replace('.', ',') + '</span><button type="button" class="add-order px-2 py-1 rounded bg-cyan-500/20 text-cyan-400 text-xs" data-cat="' + cat.replace(/"/g,'&quot;') + '" data-name="' + item.name.replace(/"/g,'&quot;') + '" data-price="' + item.price + '">Adicionar</button></div>';
+        html += '</li>';
+      });
+      html += '</ul></section>';
+    }
+    document.getElementById('client-menu').innerHTML = html;
+    document.querySelectorAll('.add-order').forEach(function(b) {
+      b.onclick = function() { addToOrder(b.getAttribute('data-cat'), b.getAttribute('data-name'), parseFloat(b.getAttribute('data-price'))); };
+    });
+  }
+
+  function renderOwnerList() {
+    var menu = getMenu();
+    var html = '';
+    for (var cat in menu) {
+      menu[cat].forEach(function(item, idx) {
+        html += '<div class="flex justify-between items-center py-2 border-b border-slate-700/50">';
+        html += '<span class="text-white">' + cat + ' · ' + item.name + ' — R$ ' + item.price.toFixed(2).replace('.', ',') + '</span>';
+        html += '<button type="button" class="delete-item text-red-400 text-sm" data-cat="' + cat.replace(/"/g,'&quot;') + '" data-idx="' + idx + '">Excluir</button>';
+        html += '</div>';
+      });
+    }
+    document.getElementById('owner-list').innerHTML = html || '<p class="text-slate-500">Nenhum item. Adicione acima.</p>';
+    document.querySelectorAll('.delete-item').forEach(function(b) {
+      b.onclick = function() { removeMenuItem(b.getAttribute('data-cat'), parseInt(b.getAttribute('data-idx'))); };
+    });
+  }
+
+  function renderAll() {
+    renderClientMenu();
+    renderOwnerList();
+  }
+
+  document.getElementById('view-client').onclick = function() {
+    document.getElementById('client-view').classList.remove('hidden');
+    document.getElementById('owner-view').classList.add('hidden');
+    document.getElementById('view-client').classList.add('bg-cyan-500/20', 'text-cyan-400', 'border-cyan-500/50');
+    document.getElementById('view-client').classList.remove('bg-slate-700', 'text-slate-400');
+    document.getElementById('view-owner').classList.remove('bg-cyan-500/20', 'text-cyan-400', 'border-cyan-500/50');
+    document.getElementById('view-owner').classList.add('bg-slate-700', 'text-slate-400', 'border-slate-600');
+  };
+  document.getElementById('view-owner').onclick = function() {
+    document.getElementById('owner-view').classList.remove('hidden');
+    document.getElementById('client-view').classList.add('hidden');
+    document.getElementById('view-owner').classList.add('bg-cyan-500/20', 'text-cyan-400', 'border-cyan-500/50');
+    document.getElementById('view-owner').classList.remove('bg-slate-700', 'text-slate-400');
+    document.getElementById('view-client').classList.remove('bg-cyan-500/20', 'text-cyan-400', 'border-cyan-500/50');
+    document.getElementById('view-client').classList.add('bg-slate-700', 'text-slate-400', 'border-slate-600');
+  };
+  document.getElementById('btn-add-item').onclick = function() {
+    var cat = (document.getElementById('new-cat').value || 'Outros').trim();
+    var name = (document.getElementById('new-name').value || '').trim();
+    var price = parseFloat(document.getElementById('new-price').value) || 0;
+    if (!name) return alert('Informe o nome do item.');
+    addMenuItem(cat, name, price);
+    document.getElementById('new-name').value = '';
+    document.getElementById('new-price').value = '';
+  };
+  document.getElementById('btn-place-order').onclick = function() {
+    if (!order.length) return;
+    alert('Demonstração: em um site real, o pedido seria enviado para o restaurante. Você montou ' + order.length + ' item(ns).');
+  };
+
+  renderAll();
+})();
+</script>
+{% endblock %}

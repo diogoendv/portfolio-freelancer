@@ -1,0 +1,33 @@
+{% extends "base_exemplo.html" %}
+{% block title %}Guia Grátis — Exemplo Página de Captura{% endblock %}
+{% block content %}
+<div class="min-h-screen pt-14 flex items-center">
+  <div class="max-w-md mx-auto px-6 py-12 w-full">
+    <div class="text-center" id="capture-main">
+      <h1 class="text-3xl md:text-4xl font-bold text-white mb-3">Receba o guia grátis</h1>
+      <p class="text-slate-400 mb-8">Um e-book com os primeiros passos para organizar seus projetos. Enviamos por e-mail.</p>
+      <form id="form-capture" class="space-y-3">
+        <input type="email" name="email" placeholder="Seu melhor e-mail" required class="w-full px-4 py-3 rounded-xl bg-slate-800/80 border border-slate-600 text-white placeholder-slate-500 focus:border-cyan-500/50 focus:outline-none text-sm" />
+        <button type="submit" class="w-full py-3 rounded-xl bg-cyan-500/20 text-cyan-400 border border-cyan-500/50 font-medium hover:bg-cyan-500/30 transition">Quero o guia</button>
+      </form>
+      <p class="text-slate-500 text-xs mt-4">Não enviamos spam. Cancele quando quiser.</p>
+    </div>
+    <div id="capture-success" class="text-center hidden">
+      <div class="w-16 h-16 rounded-full bg-cyan-500/20 flex items-center justify-center mx-auto mb-4">
+        <span class="text-3xl text-cyan-400">✓</span>
+      </div>
+      <h2 class="text-xl font-bold text-white mb-2">E-mail cadastrado!</h2>
+      <p class="text-slate-400 text-sm">Em um site real, você receberia o guia por e-mail em instantes. Esta é uma demonstração.</p>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+document.getElementById('form-capture').onsubmit = function(e) {
+  e.preventDefault();
+  document.getElementById('capture-main').classList.add('hidden');
+  document.getElementById('capture-success').classList.remove('hidden');
+};
+</script>
+{% endblock %}

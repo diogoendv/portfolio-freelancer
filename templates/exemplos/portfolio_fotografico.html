@@ -1,0 +1,49 @@
+{% extends "base_exemplo.html" %}
+{% block title %}Galeria — Exemplo Portfólio Fotográfico{% endblock %}
+{% block content %}
+<div class="min-h-screen pt-14">
+  <div class="max-w-5xl mx-auto px-6 py-10">
+    <header class="mb-10">
+      <h1 class="text-2xl font-bold text-white">Galeria</h1>
+      <p class="text-slate-400 text-sm mt-1">Fotografia e arte visual. Clique em uma imagem para ampliar.</p>
+    </header>
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-3" id="gallery">
+      {% for i in [1,2,3,4,5,6,7,8,9] %}
+      <button type="button" class="gallery-item aspect-square rounded-xl overflow-hidden bg-slate-800/80 border border-slate-700/50 flex items-center justify-center group hover:border-cyan-500/50 transition cursor-pointer" data-id="{{ i }}">
+        <span class="text-slate-600 text-2xl group-hover:text-cyan-400/80 transition">{{ i }}</span>
+      </button>
+      {% endfor %}
+    </div>
+    <p class="text-slate-500 text-sm text-center mt-10">Exemplo de galeria. Em um site real, cada item seria uma foto. <a href="/#contato" class="text-cyan-400 hover:underline">Encomende o seu</a>.</p>
+  </div>
+</div>
+<div id="lightbox" class="fixed inset-0 bg-black/90 z-50 hidden items-center justify-center p-4" aria-hidden="true">
+  <button type="button" id="lightbox-close" class="absolute top-4 right-4 text-white text-2xl hover:opacity-80">✕</button>
+  <div class="bg-slate-800 rounded-2xl p-8 max-w-md w-full text-center">
+    <div class="aspect-square bg-slate-700 rounded-xl flex items-center justify-center mb-4">
+      <span id="lightbox-num" class="text-4xl text-slate-500">1</span>
+    </div>
+    <p class="text-slate-400 text-sm">Foto #<span id="lightbox-id">1</span> — Demonstração. No site real, aqui apareceria a imagem em alta resolução.</p>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+document.querySelectorAll('.gallery-item').forEach(function(btn) {
+  btn.onclick = function() {
+    var id = btn.getAttribute('data-id');
+    document.getElementById('lightbox-num').textContent = id;
+    document.getElementById('lightbox-id').textContent = id;
+    document.getElementById('lightbox').classList.remove('hidden');
+    document.getElementById('lightbox').classList.add('flex');
+  };
+});
+document.getElementById('lightbox-close').onclick = function() {
+  document.getElementById('lightbox').classList.add('hidden');
+  document.getElementById('lightbox').classList.remove('flex');
+};
+document.getElementById('lightbox').onclick = function(e) {
+  if (e.target === document.getElementById('lightbox')) document.getElementById('lightbox-close').click();
+};
+</script>
+{% endblock %}

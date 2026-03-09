@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="/favicon.png" type="image/png" />
+  <title>{% block title %}Portfólio Freelancer{% endblock %} — Ideias em Código</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dark: '#0f172a',
+            neon: { cyan: '#22d3ee', violet: '#a78bfa' }
+          },
+          fontFamily: { sans: ['Inter', 'sans-serif'] }
+        }
+      }
+    }
+  </script>
+  <style>
+    .hero-gradient {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #0f172a 50%, #1e1b4b 75%, #0f172a 100%);
+      background-size: 400% 400%;
+      animation: gradientShift 12s ease infinite;
+    }
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+    .btn-hover {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .btn-hover:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 20px rgba(34, 211, 238, 0.4);
+    }
+    .card-glass {
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(148, 163, 184, 0.1);
+    }
+    .animate-in {
+      animation: fadeInUp 0.6s ease-out forwards;
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.2s; }
+    .delay-3 { animation-delay: 0.3s; }
+    .delay-4 { animation-delay: 0.4s; }
+    .nav-link.active { color: #22d3ee; font-weight: 500; }
+  </style>
+  {% block head %}{% endblock %}
+</head>
+<body class="bg-dark text-slate-200 font-sans antialiased min-h-screen">
+  <nav class="fixed top-0 left-0 right-0 z-50 card-glass">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+      <a href="{{ url_for('home') }}" class="text-xl font-semibold text-neon-cyan">Portfólio</a>
+      <div class="flex gap-6">
+        <a href="{{ url_for('home') }}" class="text-slate-300 hover:text-neon-cyan transition {% if active_page == 'home' %}nav-link active{% endif %}">Início</a>
+        <a href="{{ url_for('ideias') }}" class="text-slate-300 hover:text-neon-cyan transition {% if active_page == 'ideias' %}nav-link active{% endif %}">Ideias</a>
+        <a href="{{ url_for('servicos') }}" class="text-slate-300 hover:text-neon-cyan transition {% if active_page == 'servicos' %}nav-link active{% endif %}">Serviços</a>
+        <a href="{{ url_for('contato') }}" class="text-slate-300 hover:text-neon-cyan transition {% if active_page == 'contato' %}nav-link active{% endif %}">Contato</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="pt-16">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="py-8 px-4 text-center text-slate-500 text-sm">
+    &copy; Portfólio Freelancer — Ideias em código.
+  </footer>
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,41 @@
+{% extends "base_exemplo.html" %}
+{% block title %}Consultoria — Exemplo Landing Serviço{% endblock %}
+{% block content %}
+<div class="min-h-screen pt-14 flex items-center">
+  <div class="max-w-2xl mx-auto px-6 py-12 w-full">
+    <div class="text-center">
+      <span class="text-cyan-400 text-sm font-medium tracking-wider uppercase">Serviço profissional</span>
+      <h1 class="text-4xl md:text-5xl font-bold text-white mt-2 mb-6">Consultoria em gestão de projetos</h1>
+      <p class="text-slate-400 text-lg mb-8">Ajudamos sua empresa a organizar processos, prazos e equipes. Metodologias adaptadas ao seu tamanho e segmento.</p>
+      <ul class="text-left max-w-md mx-auto space-y-2 text-slate-300 mb-10">
+        <li class="flex items-center gap-2"><span class="text-cyan-400">✓</span> Diagnóstico e planejamento</li>
+        <li class="flex items-center gap-2"><span class="text-cyan-400">✓</span> Treinamento da equipe</li>
+        <li class="flex items-center gap-2"><span class="text-cyan-400">✓</span> Acompanhamento e métricas</li>
+      </ul>
+      <button type="button" id="btn-quote" class="px-8 py-4 rounded-xl bg-cyan-500/20 text-cyan-400 border border-cyan-500/50 font-medium hover:bg-cyan-500/30">Solicitar orçamento</button>
+    </div>
+    <div id="quote-form" class="mt-10 max-w-md mx-auto card-glass rounded-2xl p-6 hidden">
+      <h2 class="text-lg font-bold text-white mb-4">Solicitar orçamento</h2>
+      <form id="form-quote" class="space-y-4">
+        <input type="text" name="nome" placeholder="Nome da empresa" class="w-full px-4 py-3 rounded-lg bg-slate-800 border border-slate-600 text-white placeholder-slate-500" />
+        <input type="email" name="email" placeholder="E-mail" required class="w-full px-4 py-3 rounded-lg bg-slate-800 border border-slate-600 text-white placeholder-slate-500" />
+        <input type="tel" name="telefone" placeholder="Telefone" class="w-full px-4 py-3 rounded-lg bg-slate-800 border border-slate-600 text-white placeholder-slate-500" />
+        <textarea name="mensagem" rows="3" placeholder="Conte brevemente sua necessidade" class="w-full px-4 py-3 rounded-lg bg-slate-800 border border-slate-600 text-white placeholder-slate-500"></textarea>
+        <button type="submit" class="w-full py-3 rounded-xl bg-cyan-500/20 text-cyan-400 border border-cyan-500/50 font-medium">Enviar</button>
+      </form>
+      <p id="quote-feedback" class="mt-3 text-sm text-cyan-400 hidden">Solicitação enviada (demonstração). Em um site real, você receberia um retorno por e-mail.</p>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+document.getElementById('btn-quote').onclick = function() {
+  document.getElementById('quote-form').classList.remove('hidden');
+};
+document.getElementById('form-quote').onsubmit = function(e) {
+  e.preventDefault();
+  document.getElementById('quote-feedback').classList.remove('hidden');
+};
+</script>
+{% endblock %}

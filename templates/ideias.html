@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Ideias{% endblock %}
+
+{% block content %}
+  <section class="py-24 px-4 bg-dark min-h-screen">
+    <div class="max-w-6xl mx-auto">
+      <h1 class="text-3xl font-bold text-white mb-2">Marketplace de Ideias</h1>
+      <p class="text-slate-400 mb-12">Conceitos de sites que já projetei — da ideia ao layout.</p>
+      <div id="ideas-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Cards carregados via API -->
+      </div>
+    </div>
+  </section>
+{% endblock %}
+
+{% block scripts %}
+  <script>
+    (function() {
+      var grid = document.getElementById('ideas-grid');
+      var colors = { SaaS: 'cyan', 'E-commerce': 'violet', Portfólio: 'emerald', Blog: 'amber', Corporativo: 'rose' };
+      function badgeClass(cat) {
+        var c = colors[cat] || 'cyan';
+        var map = { cyan: 'bg-neon-cyan/20 text-neon-cyan border border-neon-cyan/30', violet: 'bg-neon-violet/20 text-neon-violet border border-neon-violet/30', emerald: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30', amber: 'bg-amber-500/20 text-amber-400 border border-amber-500/30', rose: 'bg-rose-500/20 text-rose-400 border border-rose-500/30' };
+        return 'inline-block px-3 py-1 rounded-full text-xs font-medium ' + (map[c] || map.cyan);
+      }
+      fetch('/api/ideas')
+        .then(function(r) { return r.json(); })
+        .then(function(ideas) {
+          if (!ideas || !ideas.length) return;
+          grid.innerHTML = ideas.map(function(item, i) {
+            var cat = item.category || 'Geral';
+            var delay = 'delay-' + (Math.min(i + 1, 4));
+            return '<article class="card-glass rounded-2xl p-6 animate-in ' + delay + ' opacity-0 group hover:border-slate-500/30 transition">' +
+              '<span class="' + badgeClass(cat) + '">' + cat + '</span>' +
+              '<h3 class="mt-4 text-xl font-semibold text-white group-hover:text-neon-cyan transition">' + (item.title || 'Ideia') + '</h3>' +
+              '<p class="mt-2 text-slate-400 text-sm">' + (item.description || '') + '</p>' +
+              '</article>';
+          }).join('');
+        })
+        .catch(function() {
+          grid.innerHTML = '<article class="card-glass rounded-2xl p-6 col-span-full text-center text-slate-400 py-8">Conceitos carregados em breve.</article>';
+        });
+    })();
+  </script>
+{% endblock %}

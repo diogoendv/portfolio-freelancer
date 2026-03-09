@@ -1,0 +1,73 @@
+{% extends "base_exemplo.html" %}
+{% block title %}Projetos — Exemplo Portfólio{% endblock %}
+{% block content %}
+<div class="min-h-screen pt-14">
+  <div class="max-w-5xl mx-auto px-6 py-10">
+    <header class="mb-12">
+      <h1 class="text-3xl font-bold text-white">Projetos</h1>
+      <p class="text-slate-400 mt-1">Trabalhos selecionados — design e desenvolvimento. Clique em um projeto para ver detalhes.</p>
+    </header>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="portfolio-grid">
+      <button type="button" class="project-card card-glass rounded-2xl overflow-hidden group block md:col-span-2 md:row-span-2 text-left" data-id="1">
+        <div class="aspect-[16/10] bg-slate-800/60 flex items-center justify-center group-hover:bg-slate-700/50 transition"><span class="text-slate-500 text-lg">Projeto em destaque</span></div>
+        <div class="p-6 border-t border-slate-700/30">
+          <h3 class="text-white font-semibold text-lg">Identidade e site — Marca X</h3>
+          <p class="text-slate-400 text-sm">Branding, UI e desenvolvimento</p>
+        </div>
+      </button>
+      <button type="button" class="project-card card-glass rounded-2xl overflow-hidden group block aspect-square text-left" data-id="2">
+        <div class="w-full h-full bg-slate-800/60 flex items-center justify-center group-hover:bg-slate-700/50 transition"><span class="text-slate-500">App Mobile</span></div>
+        <div class="p-4"><h3 class="text-white font-medium">App Mobile</h3><p class="text-slate-400 text-xs">UX e interface</p></div>
+      </button>
+      <button type="button" class="project-card card-glass rounded-2xl overflow-hidden group block aspect-square text-left" data-id="3">
+        <div class="w-full h-full bg-slate-800/60 flex items-center justify-center group-hover:bg-slate-700/50 transition"><span class="text-slate-500">E-commerce</span></div>
+        <div class="p-4"><h3 class="text-white font-medium">E-commerce</h3><p class="text-slate-400 text-xs">Loja virtual</p></div>
+      </button>
+      <button type="button" class="project-card card-glass rounded-2xl overflow-hidden group block md:col-span-2 aspect-[2/1] text-left" data-id="4">
+        <div class="w-full h-full bg-slate-800/60 flex items-center justify-center group-hover:bg-slate-700/50 transition"><span class="text-slate-500">Landing Page</span></div>
+        <div class="p-4"><h3 class="text-white font-medium">Landing Page — Campanha</h3><p class="text-slate-400 text-xs">Conversão e captação</p></div>
+      </button>
+    </div>
+  </div>
+</div>
+<div id="project-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4" aria-hidden="true">
+  <div class="card-glass rounded-2xl p-8 max-w-lg w-full">
+    <div class="flex justify-between items-start mb-4">
+      <h2 id="modal-title" class="text-xl font-bold text-white"></h2>
+      <button type="button" id="modal-close" class="text-slate-400 hover:text-white">✕</button>
+    </div>
+    <p id="modal-desc" class="text-slate-400 text-sm mb-4"></p>
+    <p class="text-slate-500 text-xs">Demonstração: em um portfólio real, aqui viriam mais imagens e link para o projeto.</p>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+(function() {
+  var projects = {
+    '1': { title: 'Identidade e site — Marca X', desc: 'Projeto completo de branding e site institucional para uma empresa de consultoria. Inclui logo, manual de marca, cartões e site responsivo em WordPress.' },
+    '2': { title: 'App Mobile', desc: 'Interface e experiência do usuário para um app de delivery. Wireframes em Figma e protótipo navegável para validação com o cliente.' },
+    '3': { title: 'E-commerce', desc: 'Loja virtual com catálogo, carrinho e integração com gateway de pagamento. Foco em conversão e usabilidade em mobile.' },
+    '4': { title: 'Landing Page — Campanha', desc: 'Página única para campanha de lançamento. Formulário de captação, depoimentos e CTA destacado. Alta conversão em tráfego pago.' }
+  };
+  document.querySelectorAll('.project-card').forEach(function(btn) {
+    btn.onclick = function() {
+      var id = btn.getAttribute('data-id');
+      var p = projects[id];
+      if (!p) return;
+      document.getElementById('modal-title').textContent = p.title;
+      document.getElementById('modal-desc').textContent = p.desc;
+      document.getElementById('project-modal').classList.remove('hidden');
+      document.getElementById('project-modal').classList.add('flex');
+    };
+  });
+  document.getElementById('modal-close').onclick = function() {
+    document.getElementById('project-modal').classList.add('hidden');
+    document.getElementById('project-modal').classList.remove('flex');
+  };
+  document.getElementById('project-modal').onclick = function(e) {
+    if (e.target === document.getElementById('project-modal')) document.getElementById('modal-close').click();
+  };
+})();
+</script>
+{% endblock %}

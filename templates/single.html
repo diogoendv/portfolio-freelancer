@@ -1,0 +1,171 @@
+{% extends "base_vertical.html" %}
+{% block title %}Início{% endblock %}
+
+{% block content %}
+  <!-- Bloco que sobe e desce: suas informações e história (primeira página) -->
+  <section id="sobre" class="py-16 px-8 md:px-12 bg-dark">
+    <div class="max-w-3xl mx-auto">
+      <h2 class="text-2xl font-bold text-white mb-8">Sobre</h2>
+      <div class="space-y-5 text-slate-300 leading-relaxed">
+        <p>
+          Olá! Sou desenvolvedor freelancer e trabalho transformando <span class="text-neon-cyan">ideias em código</span>. Construo experiências digitais acessíveis e sob medida para a web.
+        </p>
+        <p>
+          Minha abordagem passa por <span class="text-neon-cyan">conceitos visuais</span> primeiro — wireframes e direção de design — e depois pelo <span class="text-neon-cyan">desenvolvimento</span> em <span class="text-neon-cyan">HTML</span>, <span class="text-neon-cyan">CSS</span>, <span class="text-neon-cyan">JavaScript</span> e <span class="text-neon-cyan">Python</span> (Flask/FastAPI). Foco em clareza, performance e identidade única para cada projeto.
+        </p>
+        <p>
+          Atualmente dedico-me ao freelancer: venda de <span class="text-neon-cyan">ideias de sites</span> (conceitos e layouts) e <span class="text-neon-cyan">desenvolvimento de sites personalizados</span>. Se você tem um projeto em mente ou quer apenas uma proposta visual antes de codar, podemos conversar.
+        </p>
+        <p>
+          Fora do código, gosto de [adicione aqui um interesse pessoal, ex.: ler, música, esportes]. Pode me encontrar pelas redes sociais abaixo ou pelo formulário de contato.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Ideias (vitrine no estilo lista/portfolio) -->
+  <section id="ideias" class="py-20 px-8 md:px-12 bg-slate-900/30">
+    <div class="max-w-4xl mx-auto">
+      <h2 class="text-2xl font-bold text-white mb-2">Ideias</h2>
+      <p class="text-slate-400 mb-10">Conceitos de sites que já projetei — da ideia ao layout.</p>
+      <div id="ideas-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <!-- Cards carregados via API -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Serviços (com badges de tecnologias no estilo do modelo) -->
+  <section id="servicos" class="py-20 px-8 md:px-12 bg-dark">
+    <div class="max-w-4xl mx-auto">
+      <h2 class="text-2xl font-bold text-white mb-2">Serviços</h2>
+      <p class="text-slate-400 mb-10">Pacotes de desenvolvimento para você escolher.</p>
+      <div class="space-y-12">
+        <div>
+          <div class="flex flex-wrap items-baseline gap-2 mb-2">
+            <h3 class="text-lg font-semibold text-white">Conceitos / Ideias de Sites</h3>
+            <span class="text-slate-500 text-sm">— proposta antes de codar</span>
+          </div>
+          <p class="text-slate-400 text-sm leading-relaxed mb-4">Wireframes e direção de design para o seu site.</p>
+          <div class="flex flex-wrap gap-2">
+            <span class="tech-badge">Figma</span>
+            <span class="tech-badge">Wireframes</span>
+            <span class="tech-badge">UI/UX</span>
+          </div>
+        </div>
+        <div>
+          <div class="flex flex-wrap items-baseline gap-2 mb-2">
+            <h3 class="text-lg font-semibold text-white">Desenvolvimento de Sites Personalizados</h3>
+            <span class="text-slate-500 text-sm">— código sob medida</span>
+          </div>
+          <p class="text-slate-400 text-sm leading-relaxed mb-4">Sites com HTML, CSS, JS e backend quando necessário.</p>
+          <div class="flex flex-wrap gap-2">
+            <span class="tech-badge">HTML</span>
+            <span class="tech-badge">CSS</span>
+            <span class="tech-badge">JavaScript</span>
+            <span class="tech-badge">Python</span>
+            <span class="tech-badge">Flask</span>
+            <span class="tech-badge">Tailwind</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contato / Briefing -->
+  <section id="contato" class="py-20 px-8 md:px-12 bg-slate-900/30">
+    <div class="max-w-xl mx-auto">
+      <h2 class="text-3xl font-bold text-white mb-2">Contato / Briefing</h2>
+      <p class="text-slate-400 mb-8">Envie sua ideia; validamos o e-mail antes de salvar.</p>
+      <form id="form-contact" class="card-glass rounded-2xl p-8 space-y-6">
+        <div>
+          <label for="name" class="block text-sm font-medium text-slate-300 mb-2">Nome</label>
+          <input type="text" id="name" name="name" required class="w-full px-4 py-3 rounded-lg bg-slate-800/50 border border-slate-600 text-white placeholder-slate-500 focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan outline-none transition" placeholder="Seu nome" />
+        </div>
+        <div>
+          <label for="email" class="block text-sm font-medium text-slate-300 mb-2">E-mail</label>
+          <input type="email" id="email" name="email" required class="w-full px-4 py-3 rounded-lg bg-slate-800/50 border border-slate-600 text-white placeholder-slate-500 focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan outline-none transition" placeholder="seu@email.com" />
+        </div>
+        <div>
+          <label for="service" class="block text-sm font-medium text-slate-300 mb-2">Serviço de interesse</label>
+          <select id="service" name="service" class="w-full px-4 py-3 rounded-lg bg-slate-800/50 border border-slate-600 text-white focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan outline-none transition">
+            <option value="">Selecione</option>
+            <option value="conceito">Conceito / Ideia de Site</option>
+            <option value="desenvolvimento">Desenvolvimento Personalizado</option>
+          </select>
+        </div>
+        <div>
+          <label for="message" class="block text-sm font-medium text-slate-300 mb-2">Mensagem / Briefing</label>
+          <textarea id="message" name="message" rows="4" required class="w-full px-4 py-3 rounded-lg bg-slate-800/50 border border-slate-600 text-white placeholder-slate-500 focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan outline-none transition resize-none" placeholder="Conte seu projeto..."></textarea>
+        </div>
+        <p id="form-feedback" class="text-sm hidden"></p>
+        <button type="submit" class="btn-hover w-full py-3 rounded-lg bg-neon-cyan/20 text-neon-cyan border border-neon-cyan/50 font-medium">Enviar</button>
+      </form>
+    </div>
+  </section>
+{% endblock %}
+
+{% block scripts %}
+  <script>
+    (function() {
+      var grid = document.getElementById('ideas-grid');
+      var colors = { SaaS: 'cyan', 'E-commerce': 'violet', Portfólio: 'emerald', Blog: 'amber', Corporativo: 'rose' };
+      function badgeClass(cat) {
+        var c = colors[cat] || 'cyan';
+        var map = { cyan: 'bg-neon-cyan/20 text-neon-cyan border border-neon-cyan/30', violet: 'bg-neon-violet/20 text-neon-violet border border-neon-violet/30', emerald: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30', amber: 'bg-amber-500/20 text-amber-400 border border-amber-500/30', rose: 'bg-rose-500/20 text-rose-400 border border-rose-500/30' };
+        return 'inline-block px-3 py-1 rounded-full text-xs font-medium ' + (map[c] || map.cyan);
+      }
+      fetch('/api/ideas')
+        .then(function(r) { return r.json(); })
+        .then(function(ideas) {
+          if (!ideas || !ideas.length) return;
+          grid.innerHTML = ideas.map(function(item, i) {
+            var cat = item.category || 'Geral';
+            var delay = 'delay-' + (Math.min(i + 1, 4));
+            var url = item.url || '';
+            var openTag = url ? ('<a href="' + url + '" class="block group/card">') : '';
+            var closeTag = url ? '</a>' : '';
+            var card = '<article class="card-glass rounded-2xl p-6 animate-in ' + delay + ' opacity-0 group hover:border-slate-500/30 transition ' + (url ? 'cursor-pointer' : '') + '">' +
+              '<span class="' + badgeClass(cat) + '">' + cat + '</span>' +
+              '<h3 class="mt-4 text-xl font-semibold text-white group-hover:text-neon-cyan group-hover/card:text-neon-cyan transition">' + (item.title || 'Ideia') + '</h3>' +
+              '<p class="mt-2 text-slate-400 text-sm">' + (item.description || '') + '</p>' +
+              '</article>';
+            return openTag + card + closeTag;
+          }).join('');
+        })
+        .catch(function() {
+          grid.innerHTML = '<article class="card-glass rounded-2xl p-6 col-span-full text-center text-slate-400 py-8">Conceitos carregados em breve.</article>';
+        });
+    })();
+    (function() {
+      var form = document.getElementById('form-contact');
+      var feedback = document.getElementById('form-feedback');
+      function showFeedback(msg, isError) {
+        feedback.textContent = msg;
+        feedback.className = 'text-sm ' + (isError ? 'text-red-400' : 'text-neon-cyan');
+        feedback.classList.remove('hidden');
+      }
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        var payload = {
+          name: document.getElementById('name').value,
+          email: document.getElementById('email').value,
+          service: document.getElementById('service').value,
+          message: document.getElementById('message').value
+        };
+        fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+          .then(function(r) {
+            return r.text().then(function(text) {
+              var data = {};
+              try { data = text ? JSON.parse(text) : {}; } catch (_) {}
+              return { status: r.status, data: data, ok: r.ok };
+            });
+          })
+          .then(function(res) {
+            if (res.ok && res.data.success) { showFeedback(res.data.message, false); form.reset(); }
+            else { showFeedback(res.data.error || 'Erro ao enviar.', true); }
+          })
+          .catch(function() { showFeedback('Erro de conexão. Tente novamente.', true); });
+      });
+    })();
+  </script>
+{% endblock %}

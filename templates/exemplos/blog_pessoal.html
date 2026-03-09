@@ -1,0 +1,82 @@
+{% extends "base_exemplo.html" %}
+{% block title %}Blog — Exemplo{% endblock %}
+{% block content %}
+<div class="min-h-screen pt-14">
+  <header class="border-b border-slate-700/50 py-10 text-center">
+    <h1 class="text-3xl font-bold text-white">Blog da Maria</h1>
+    <p class="text-slate-400 mt-2">Estudante de Design · Fotografia e dia a dia em Florianópolis</p>
+  </header>
+
+  <main class="max-w-2xl mx-auto px-6 py-10">
+    <div id="post-list">
+      <article class="post-preview border-b border-slate-700/50 py-6 cursor-pointer hover:opacity-90" data-id="1">
+        <time class="text-slate-500 text-sm">28 de fevereiro de 2025</time>
+        <h2 class="text-xl font-semibold text-white mt-1">Primeira semana no curso de Design Gráfico</h2>
+        <p class="text-slate-400 text-sm mt-2">Comecei o semestre na UFSC. Muitos briefings, Figma e café. Conto como foi a adaptação e as primeiras entregas.</p>
+      </article>
+      <article class="post-preview border-b border-slate-700/50 py-6 cursor-pointer hover:opacity-90" data-id="2">
+        <time class="text-slate-500 text-sm">15 de março de 2025</time>
+        <h2 class="text-xl font-semibold text-white mt-1">Fotos do fim de semana na Lagoa</h2>
+        <p class="text-slate-400 text-sm mt-2">Peguei o celular e a câmera e fui registrar o pôr do sol. Algumas dicas de enquadramento para quem está começando.</p>
+      </article>
+      <article class="post-preview border-b border-slate-700/50 py-6 cursor-pointer hover:opacity-90" data-id="3">
+        <time class="text-slate-500 text-sm">22 de março de 2025</time>
+        <h2 class="text-xl font-semibold text-white mt-1">Freela de identidade visual: do primeiro contato à entrega</h2>
+        <p class="text-slate-400 text-sm mt-2">Como organizei o projeto para uma cafeteria aqui da cidade. Cronograma, revisões e o que eu faria diferente.</p>
+      </article>
+      <article class="post-preview border-b border-slate-700/50 py-6 cursor-pointer hover:opacity-90" data-id="4">
+        <time class="text-slate-500 text-sm">1 de abril de 2025</time>
+        <h2 class="text-xl font-semibold text-white mt-1">Rotina de estudos + estágio: dá pra conciliar?</h2>
+        <p class="text-slate-400 text-sm mt-2">Estou no segundo mês de estágio em um estúdio. Divido como estou organizando o tempo e o que aprendi até agora.</p>
+      </article>
+    </div>
+
+    <div id="post-full" class="hidden">
+      <button type="button" id="back-list" class="text-cyan-400 hover:underline text-sm mb-6">← Voltar à lista</button>
+      <article id="post-content"></article>
+    </div>
+  </main>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+(function() {
+  var posts = {
+    '1': {
+      date: '28 de fevereiro de 2025',
+      title: 'Primeira semana no curso de Design Gráfico',
+      body: '<p class="text-slate-300 leading-relaxed mb-4">Comecei o semestre na UFSC e a realidade bateu: muito mais prática do que eu imaginava. Nos primeiros dias já tivemos briefing de um projeto de identidade visual e a turma inteira no Figma.</p><p class="text-slate-300 leading-relaxed mb-4">O que me salvou foi anotar tudo e montar uma pasta de referências desde o primeiro dia. Também percebi que café e noites de sono reguladas fazem diferença — óbvio, mas fácil de ignorar quando a entrega é na sexta.</p><p class="text-slate-300 leading-relaxed">Se você está entrando em Design agora, minha dica: não tenha medo de refazer. Meus primeiros layouts foram recusados e refiz três vezes. No fim, o resultado ficou bem melhor e eu aprendi mais do que em qualquer tutorial.</p>'
+    },
+    '2': {
+      date: '15 de março de 2025',
+      title: 'Fotos do fim de semana na Lagoa',
+      body: '<p class="text-slate-300 leading-relaxed mb-4">Peguei o celular e a câmera e fui registrar o pôr do sol na Lagoa da Conceição. Floripa não cansa de surpreender.</p><p class="text-slate-300 leading-relaxed mb-4">Tentei focar em enquadramentos simples: linha do horizonte em um terço, pessoas em silhueta. Nada de filtro pesado — só ajuste de contraste e temperatura no celular.</p><p class="text-slate-300 leading-relaxed">Para quem está começando em fotografia, o que mais me ajudou foi olhar muitos trabalhos no Instagram e anotar o que gostava (ângulo, hora do dia, cor). Depois é só sair e praticar.</p>'
+    },
+    '3': {
+      date: '22 de março de 2025',
+      title: 'Freela de identidade visual: do primeiro contato à entrega',
+      body: '<p class="text-slate-300 leading-relaxed mb-4">Uma cafeteria nova aqui da cidade me procurou para fazer a identidade visual. Foi meu primeiro freela “do zero”: logo, cartão, papel timbrado e rede social.</p><p class="text-slate-300 leading-relaxed mb-4">Organizei em etapas: briefing, pesquisa, 3 direções de logo, revisão, fechamento e entrega dos arquivos. O cliente pediu duas rodadas de alteração e eu já tinha previsto isso no orçamento.</p><p class="text-slate-300 leading-relaxed">O que eu faria diferente: combinar prazos por etapa por escrito e enviar um resumo por e-mail após cada reunião. Evita “eu acho que a gente combinou isso” e deixa tudo claro para os dois lados.</p>'
+    },
+    '4': {
+      date: '1 de abril de 2025',
+      title: 'Rotina de estudos + estágio: dá pra conciliar?',
+      body: '<p class="text-slate-300 leading-relaxed mb-4">Estou no segundo mês de estágio em um estúdio pequeno. Manhãs no escritório, tardes (e algumas noites) na faculdade. Dá para conciliar, mas exige organização.</p><p class="text-slate-300 leading-relaxed mb-4">Uso um caderno para listar as tarefas do dia e do estágio separado das da faculdade. Assim não misturo prazos e consigo priorizar. Nos dias mais pesados, abro mão de redes sociais e deixo só o essencial.</p><p class="text-slate-300 leading-relaxed">O que aprendi até agora: pedir ajuda quando travar um projeto, avisar com antecedência quando uma entrega da faculdade apertar e não ter vergonha de dizer “preciso de um dia para organizar a cabeça”. Saúde mental também é produtividade.</p>'
+    }
+  };
+  document.querySelectorAll('.post-preview').forEach(function(el) {
+    el.onclick = function() {
+      var id = el.getAttribute('data-id');
+      var p = posts[id];
+      if (!p) return;
+      document.getElementById('post-list').classList.add('hidden');
+      document.getElementById('post-full').classList.remove('hidden');
+      document.getElementById('post-content').innerHTML = '<time class="text-slate-500 text-sm">' + p.date + '</time><h1 class="text-2xl font-bold text-white mt-2 mb-6">' + p.title + '</h1><div class="prose prose-invert max-w-none">' + p.body + '</div>';
+    };
+  });
+  document.getElementById('back-list').onclick = function() {
+    document.getElementById('post-full').classList.add('hidden');
+    document.getElementById('post-list').classList.remove('hidden');
+  };
+})();
+</script>
+{% endblock %}
