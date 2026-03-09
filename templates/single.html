@@ -3,9 +3,9 @@
 
 {% block content %}
   <!-- Bloco que sobe e desce: suas informações e história (primeira página) -->
-  <section id="sobre" class="py-16 px-8 md:px-12 bg-dark">
+  <section id="sobre" class="py-10 sm:py-16 px-4 sm:px-8 md:px-12 bg-dark">
     <div class="max-w-3xl mx-auto">
-      <h2 class="text-2xl font-bold text-white mb-8">Sobre</h2>
+      <h2 class="text-xl sm:text-2xl font-bold text-white mb-6 sm:mb-8">Sobre</h2>
       <div class="space-y-5 text-slate-300 leading-relaxed">
         <p>
           Olá! Sou desenvolvedor freelancer e trabalho transformando <span class="text-neon-cyan">ideias em código</span>. Construo experiências digitais acessíveis e sob medida para a web.
@@ -24,10 +24,10 @@
   </section>
 
   <!-- Ideias (vitrine no estilo lista/portfolio) -->
-  <section id="ideias" class="py-20 px-8 md:px-12 bg-slate-900/30">
+  <section id="ideias" class="py-12 sm:py-20 px-4 sm:px-8 md:px-12 bg-slate-900/30">
     <div class="max-w-4xl mx-auto">
-      <h2 class="text-2xl font-bold text-white mb-2">Ideias</h2>
-      <p class="text-slate-400 mb-10">Conceitos de sites que já projetei — da ideia ao layout.</p>
+      <h2 class="text-xl sm:text-2xl font-bold text-white mb-2">Ideias</h2>
+      <p class="text-slate-400 mb-6 sm:mb-10 text-sm sm:text-base">Conceitos de sites que já projetei — da ideia ao layout.</p>
       <div id="ideas-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <!-- Cards carregados via API -->
       </div>
@@ -35,10 +35,10 @@
   </section>
 
   <!-- Serviços (com badges de tecnologias no estilo do modelo) -->
-  <section id="servicos" class="py-20 px-8 md:px-12 bg-dark">
+  <section id="servicos" class="py-12 sm:py-20 px-4 sm:px-8 md:px-12 bg-dark">
     <div class="max-w-4xl mx-auto">
-      <h2 class="text-2xl font-bold text-white mb-2">Serviços</h2>
-      <p class="text-slate-400 mb-10">Pacotes de desenvolvimento para você escolher.</p>
+      <h2 class="text-xl sm:text-2xl font-bold text-white mb-2">Serviços</h2>
+      <p class="text-slate-400 mb-6 sm:mb-10 text-sm sm:text-base">Pacotes de desenvolvimento para você escolher.</p>
       <div class="space-y-12">
         <div>
           <div class="flex flex-wrap items-baseline gap-2 mb-2">
@@ -72,11 +72,11 @@
   </section>
 
   <!-- Contato / Briefing -->
-  <section id="contato" class="py-20 px-8 md:px-12 bg-slate-900/30">
+  <section id="contato" class="py-12 sm:py-20 px-4 sm:px-8 md:px-12 bg-slate-900/30">
     <div class="max-w-xl mx-auto">
-      <h2 class="text-3xl font-bold text-white mb-2">Contato / Briefing</h2>
-      <p class="text-slate-400 mb-8">Envie sua ideia; validamos o e-mail antes de salvar.</p>
-      <form id="form-contact" class="card-glass rounded-2xl p-8 space-y-6">
+      <h2 class="text-2xl sm:text-3xl font-bold text-white mb-2">Contato / Briefing</h2>
+      <p class="text-slate-400 mb-6 sm:mb-8 text-sm sm:text-base">Envie sua ideia; validamos o e-mail antes de salvar.</p>
+      <form id="form-contact" class="card-glass rounded-2xl p-5 sm:p-8 space-y-5 sm:space-y-6">
         <div>
           <label for="name" class="block text-sm font-medium text-slate-300 mb-2">Nome</label>
           <input type="text" id="name" name="name" required class="w-full px-4 py-3 rounded-lg bg-slate-800/50 border border-slate-600 text-white placeholder-slate-500 focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan outline-none transition" placeholder="Seu nome" />
