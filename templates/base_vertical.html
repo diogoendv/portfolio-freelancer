@@ -113,22 +113,65 @@
       z-index: 9999;
     }
     html { scroll-behavior: smooth; }
-    @media (max-width: 1023px) {
-      .main-content { margin-left: 0 !important; padding-top: 4rem; }
-    }
+    img, video { max-width: 100%; height: auto; }
+    body, .main-content { word-wrap: break-word; overflow-wrap: break-word; }
     .mobile-menu-open .mobile-drawer-panel { transform: translateX(0); }
     .mobile-menu-closed .mobile-drawer-panel { transform: translateX(-100%); pointer-events: none; }
     .mobile-menu-open #mobile-overlay { opacity: 1; pointer-events: auto; }
     .mobile-menu-closed { pointer-events: none; }
     .mobile-menu-open { pointer-events: auto; }
     .mobile-drawer-panel { transition: transform 0.25s ease; }
+
+    /* Layout mobile: forçar com CSS explícito (não depender do Tailwind CDN) */
+    @media (max-width: 1023px) {
+      #sidebar-desktop {
+        display: none !important;
+        visibility: hidden !important;
+        position: absolute !important;
+        left: -9999px !important;
+      }
+      #header-mobile {
+        display: flex !important;
+      }
+      #mobile-drawer {
+        display: block !important;
+      }
+      .main-content {
+        margin-left: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        padding-top: 3.5rem !important;
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+      }
+    }
+    @media (min-width: 1024px) {
+      #sidebar-desktop {
+        display: flex !important;
+        flex-direction: column !important;
+        visibility: visible !important;
+        position: fixed !important;
+        left: 1.5rem !important;
+        width: 18rem !important;
+      }
+      #header-mobile {
+        display: none !important;
+      }
+      #mobile-drawer {
+        display: none !important;
+      }
+      .main-content {
+        margin-left: 19.5rem !important;
+        padding-top: 0 !important;
+      }
+    }
   </style>
   {% block head %}{% endblock %}
 </head>
 {% set _nav_base = '/#' if request.path.startswith('/exemplo') else '#' %}
-<body class="bg-dark text-slate-200 font-sans antialiased min-h-screen flex flex-col lg:flex-row">
+<body class="bg-dark text-slate-200 font-sans antialiased min-h-screen flex flex-col lg:flex-row overflow-x-hidden">
   <!-- Header mobile (barra superior em telas pequenas) -->
-  <header class="lg:hidden fixed top-0 left-0 right-0 h-14 z-50 bg-dark/95 backdrop-blur border-b border-slate-700/50 flex items-center justify-between px-4">
+  <header id="header-mobile" class="fixed top-0 left-0 right-0 h-14 z-50 bg-dark border-b border-slate-700/50 flex items-center justify-between px-4">
     <a href="{{ _nav_base }}sobre">
       <img src="/static/images/logo.png" alt="Diogove" class="h-8 w-auto max-w-[140px]" />
     </a>
@@ -162,8 +205,8 @@
     </aside>
   </div>
 
-  <!-- Menu lateral (desktop) -->
-  <aside class="hidden lg:flex fixed left-4 lg:left-6 top-0 bottom-0 w-[min(280px,30vw)] lg:w-72 bg-dark flex-col py-12 pl-10 pr-6 z-40">
+  <!-- Sidebar desktop (só visível em telas ≥ 1024px) -->
+  <aside id="sidebar-desktop" class="fixed left-4 top-0 bottom-0 w-72 bg-dark flex-col py-12 pl-10 pr-6 z-40 hidden">
     <div class="mb-8">
       <a href="{{ _nav_base }}sobre" class="block">
         <img src="/static/images/logo.png" alt="Diogove — Desenvolvedor Freelancer" class="max-w-[200px] h-auto" width="200" height="60" />
@@ -204,8 +247,8 @@
   <!-- Efeito de iluminação que segue o cursor -->
   <div id="cursor-glow" aria-hidden="true"></div>
 
-  <!-- Área de conteúdo (coluna direita, bloco que sobe e desce) -->
-  <div class="main-content flex-1 min-w-0 ml-[calc(1rem+min(280px,30vw)+0.5rem)] lg:ml-[19.5rem]">
+  <!-- Área de conteúdo (full width no mobile; margem à esquerda no desktop) -->
+  <div class="main-content flex-1 min-w-0 px-0 box-border">
     {% block content %}{% endblock %}
     <footer class="py-6 sm:py-8 px-4 sm:px-6 text-center text-slate-500 text-xs sm:text-sm">
       &copy; Portfólio Freelancer — Ideias em código.
