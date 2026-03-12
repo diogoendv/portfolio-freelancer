@@ -18,10 +18,10 @@
 
   <div class="flex flex-col md:flex-row gap-4 sm:gap-6 p-4 sm:p-6">
     <nav class="flex flex-wrap md:flex-col gap-2 shrink-0">
-      <button type="button" data-tab="engajamento" class="admin-tab px-4 py-2 rounded-lg text-left bg-cyan-500/20 text-cyan-400 border border-cyan-500/50">Engajamento</button>
-      <button type="button" data-tab="relatorios" class="admin-tab px-4 py-2 rounded-lg text-left text-slate-400 hover:bg-slate-800/50">Relatórios (Leads)</button>
-      <button type="button" data-tab="chat" class="admin-tab px-4 py-2 rounded-lg text-left text-slate-400 hover:bg-slate-800/50">Chat</button>
-      <button type="button" data-tab="arquivadas" class="admin-tab px-4 py-2 rounded-lg text-left text-slate-400 hover:bg-slate-800/50">Conversas finalizadas</button>
+      <button type="button" data-tab="engajamento" class="admin-tab px-4 py-2 rounded-lg text-left border border-transparent outline-none bg-cyan-500/20 text-cyan-400 border-cyan-500/50">Engajamento</button>
+      <button type="button" data-tab="relatorios" class="admin-tab px-4 py-2 rounded-lg text-left border border-transparent outline-none text-slate-400 hover:bg-slate-800/50">Relatórios (Leads)</button>
+      <button type="button" data-tab="chat" class="admin-tab px-4 py-2 rounded-lg text-left border border-transparent outline-none text-slate-400 hover:bg-slate-800/50">Chat</button>
+      <button type="button" data-tab="arquivadas" class="admin-tab px-4 py-2 rounded-lg text-left border border-transparent outline-none text-slate-400 hover:bg-slate-800/50">Conversas finalizadas</button>
     </nav>
 
     <main class="flex-1 min-w-0">
@@ -151,8 +151,9 @@
           var t = btn.getAttribute('data-tab');
           tabs.forEach(function(b) {
             b.classList.remove('bg-cyan-500/20', 'text-cyan-400', 'border-cyan-500/50');
-            b.classList.add('text-slate-400');
+            b.classList.add('text-slate-400', 'border-transparent');
           });
+          btn.classList.remove('border-transparent');
           btn.classList.add('bg-cyan-500/20', 'text-cyan-400', 'border-cyan-500/50');
           panels.forEach(function(p) {
             p.classList.add('hidden');
@@ -252,7 +253,7 @@
             var tbody = document.getElementById('leads-tbody');
             tbody.innerHTML = list.length === 0 ? '<tr><td colspan="5" class="p-4 text-slate-500">Nenhum lead ainda.</td></tr>' : list.map(function(L) {
               var d = (L.created_at || '').slice(0, 16);
-              return '<tr class="hover:bg-slate-800/40"><td class="p-3">' + d + '</td><td class="p-3">' + (L.name || '') + '</td><td class="p-3">' + (L.email || '') + '</td><td class="p-3">' + (L.service || '') + '</td><td class="p-3 max-w-xs truncate">' + (L.message || '') + '</td></tr>';
+              return '<tr class="hover:bg-slate-800/40"><td class="p-3 align-top">' + d + '</td><td class="p-3 align-top">' + (L.name || '').replace(/</g, '&lt;') + '</td><td class="p-3 align-top">' + (L.email || '').replace(/</g, '&lt;') + '</td><td class="p-3 align-top">' + (L.service || '').replace(/</g, '&lt;') + '</td><td class="p-3 align-top whitespace-pre-wrap break-words max-w-md">' + (L.message || '').replace(/</g, '&lt;') + '</td></tr>';
             }).join('');
           });
       }
