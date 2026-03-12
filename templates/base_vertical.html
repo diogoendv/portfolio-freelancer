@@ -274,6 +274,48 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
   <script>
+    // Forçar layout mobile em telas pequenas (fallback JS independente de CSS)
+    (function() {
+      function applyResponsiveLayout() {
+        var w = window.innerWidth || document.documentElement.clientWidth || screen.width || 0;
+        var isMobile = w && w <= 900;
+        var sidebar = document.getElementById('sidebar-desktop');
+        var header = document.getElementById('header-mobile');
+        var drawer = document.getElementById('mobile-drawer');
+        var main = document.querySelector('.main-content');
+
+        if (isMobile) {
+          if (sidebar) sidebar.style.display = 'none';
+          if (header) header.style.display = 'flex';
+          if (drawer) drawer.style.display = 'block';
+          if (main) {
+            main.style.marginLeft = '0';
+            main.style.width = '100%';
+            main.style.maxWidth = '100%';
+            main.style.paddingTop = '3.5rem';
+            main.style.paddingLeft = '0.75rem';
+            main.style.paddingRight = '0.75rem';
+          }
+        } else {
+          if (sidebar) sidebar.style.display = 'flex';
+          if (header) header.style.display = 'none';
+          if (drawer) drawer.style.display = 'none';
+          if (main) {
+            main.style.marginLeft = '19.5rem';
+            main.style.paddingTop = '0';
+            main.style.paddingLeft = '';
+            main.style.paddingRight = '';
+            main.style.width = '';
+            main.style.maxWidth = '';
+          }
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', applyResponsiveLayout);
+      window.addEventListener('resize', applyResponsiveLayout);
+      window.addEventListener('orientationchange', applyResponsiveLayout);
+    })();
+
     // Menu mobile: abrir/fechar drawer
     (function() {
       var btn = document.getElementById('mobile-menu-btn');
